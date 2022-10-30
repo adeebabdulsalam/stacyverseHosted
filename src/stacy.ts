@@ -2,7 +2,7 @@ import { ipfs } from '@graphprotocol/graph-ts'
 import { JSONValue, Value } from '@graphprotocol/graph-ts'
 import { TransferBatch, TransferSingle, CreateERC1155_v1, URI } from "../generated/Stacy/Stacy"
 import { BigInt, ethereum, store } from '@graphprotocol/graph-ts'
-import { Account, Collection, Transaction, Transfer, Token } from "../generated/schema"
+import { Account, Collection, Transaction, Transfer, Token, HalloweenTrade } from "../generated/schema"
 import { fetchAccount, fetchBalance, fetchCollection, fetchToken, events, transactions, constants} from './utils/contract'
 
 export function processItem(value: JSONValue, userData: Value): void {
@@ -87,10 +87,22 @@ function registerTransfer(
         balanceEntity2.value = balanceEntity2.value.plus(transferEntity.value)
         balanceEntity2.save()
     }else{
+      // /////////////HalloWeen Trade///////////////////////
         // if burned after blockNumber: 15830458 : block just after announced in discord
         if(event.block.number.ge(BigInt.fromI32(15830458)) && tokenEntity.isHalloweenTradeable){
             from.isHalloweenTraded = true
+            collectionEntity.numberOfHalloweenTrades =  collectionEntity.numberOfHalloweenTrades.plus(constants.BIGINT_ONE)
             from.save()
+            collectionEntity.save()
+
+            let newTrade = HalloweenTrade.load(transferEntity.transaction)
+            if(newTrade == null){
+              newTrade = new HalloweenTrade(transferEntity.transaction)
+              newTrade.consumer = from.id
+              newTrade.consumed = tokenEntity.id
+              newTrade.amount = transferEntity.value
+              newTrade.save()
+            }
         }
         // isHalloweenTradeable
     }

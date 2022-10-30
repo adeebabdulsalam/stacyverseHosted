@@ -50,6 +50,7 @@ export function fetchCollection(address: Address): Collection{
   let collectionEntity = Collection.load(address.toHexString())
   if(collectionEntity == null){
     collectionEntity = new Collection(address.toHexString())
+    collectionEntity.numberOfHalloweenTrades = constants.BIGINT_ZERO
   }
   return collectionEntity as Collection
 }

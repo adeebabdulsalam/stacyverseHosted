@@ -168,6 +168,15 @@ export class Collection extends Entity {
       this.set("creator", Value.fromString(<string>value));
     }
   }
+
+  get numberOfHalloweenTrades(): BigInt {
+    let value = this.get("numberOfHalloweenTrades");
+    return value!.toBigInt();
+  }
+
+  set numberOfHalloweenTrades(value: BigInt) {
+    this.set("numberOfHalloweenTrades", Value.fromBigInt(value));
+  }
 }
 
 export class Token extends Entity {
@@ -525,5 +534,64 @@ export class Transaction extends Entity {
     } else {
       this.set("gasPrice", Value.fromBigInt(<BigInt>value));
     }
+  }
+}
+
+export class HalloweenTrade extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save HalloweenTrade entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type HalloweenTrade must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("HalloweenTrade", id.toString(), this);
+    }
+  }
+
+  static load(id: string): HalloweenTrade | null {
+    return changetype<HalloweenTrade | null>(store.get("HalloweenTrade", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get consumer(): string {
+    let value = this.get("consumer");
+    return value!.toString();
+  }
+
+  set consumer(value: string) {
+    this.set("consumer", Value.fromString(value));
+  }
+
+  get consumed(): string {
+    let value = this.get("consumed");
+    return value!.toString();
+  }
+
+  set consumed(value: string) {
+    this.set("consumed", Value.fromString(value));
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value!.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
   }
 }

@@ -16,6 +16,7 @@ type Collection @entity {
   name: String
   symbol: String
   creator: String
+  numberOfHalloweenTrades: BigInt!
 }
 
 # Token Entities 
@@ -58,4 +59,12 @@ type Transaction @entity(immutable: true){
   # Not deriving because of some loop, subgraph deployment fails
   transfers: [Transfer!]!
   gasPrice: BigInt
+}
+
+type HalloweenTrade @entity(immutable: true){
+  "transaction hash"
+  id: ID!
+  consumer: Account!
+  consumed: Token!
+  amount: BigInt!
 }
